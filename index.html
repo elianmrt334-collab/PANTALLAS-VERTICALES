@@ -19,7 +19,6 @@
         @keyframes scroll-left { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .animate-marquee { animation: scroll-left 25s linear infinite; }
         
-        /* Animación LiquidGlass: Brillo en las orillas */
         @keyframes liquid-glow {
             0%, 100% { box-shadow: inset 0 0 15px rgba(21, 142, 69, 0.4), 0 0 10px rgba(21, 142, 69, 0.2); border-color: rgba(21, 142, 69, 0.3); }
             50% { box-shadow: inset 0 0 25px rgba(23, 46, 89, 0.5), 0 0 20px rgba(23, 46, 89, 0.3); border-color: rgba(23, 46, 89, 0.4); }
@@ -62,7 +61,7 @@
             object-fit: contain;
         }
 
-        /* Los banners seleccionados ocuparán todo el espacio vertical */
+        /* Las imágenes (banners) ocupan todo el espacio vertical */
         .image-mode {
             object-fit: cover !important;
         }
@@ -74,16 +73,16 @@
 </head>
 <body class="relative w-full flex flex-col">
     
-    <!-- EFECTO LIQUID GLASS (BORDE BRILLANTE) -->
+    <!-- EFECTO LIQUID GLASS -->
     <div class="liquid-border"></div>
 
-    <!-- Fondo Abstracto (Visible en espacios negativos de videos horizontales) -->
+    <!-- Fondo Abstracto para espacios negativos de video -->
     <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40 pointer-events-none"
         style="background-image: url('abstract-white-background-with-elegant-curving-lin-2026-01-07-23-20-12-utc.jpg')"></div>
 
-    <!-- HEADER COMPACTO -->
+    <!-- HEADER -->
     <header class="relative z-30 bg-white/95 backdrop-blur-md shadow-md flex items-center justify-between px-4 py-3 border-b-4 border-[#158e45] shrink-0">
-        <img src="LOGO COOSAJO SIN ESLOGAN.png" alt="Logo COOSAJO" class="h-9 w-auto object-contain" />
+        <img src="LOGO COOSAJO SIN ESLOGAN.png" alt="Logo" class="h-9 w-auto object-contain" />
         <div class="flex items-center gap-2 bg-slate-100/50 px-3 py-1 rounded-xl border border-slate-200 shadow-inner">
             <div id="weatherIconContainer"><i data-lucide="cloud-sun" class="w-4 h-4 text-[#172e59]"></i></div>
             <span id="weatherTemp" class="font-bold text-xs text-[#172e59]">--°C</span>
@@ -94,40 +93,38 @@
 
     <main class="relative z-10 flex-1 w-full min-h-0 flex flex-col overflow-hidden">
         
-        <!-- Pantalla de Configuración Inicial -->
         <div id="setupOverlay" class="absolute inset-0 z-50 bg-[#172e59]/98 backdrop-blur-2xl flex flex-col items-center justify-center p-8 text-center">
             <img src="LOGO COOSAJO SIN ESLOGAN.png" class="h-14 mb-8 brightness-200" />
             <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-6 border border-white/20 animate-pulse">
-                <i data-lucide="hard-drive" class="w-10 h-10 text-white"></i>
+                <i data-lucide="folder-up" class="w-10 h-10 text-white"></i>
             </div>
-            <h2 class="text-white text-xl font-bold mb-2 tracking-tight uppercase">Tótem Digital COOSAJO</h2>
-            <p class="text-blue-200 mb-8 text-[10px] uppercase tracking-[0.2em] font-medium">Carga de Contenido Local (Videos e Imágenes)</p>
+            <h2 class="text-white text-xl font-bold mb-2 tracking-tight uppercase">Panel de Control COOSAJO</h2>
+            <p class="text-blue-200 mb-8 text-[10px] uppercase tracking-[0.2em] font-medium">Carga de Campañas (Video e Imágenes)</p>
             
-            <!-- ACTUALIZADO: accept permite video e imagen -->
+            <!-- Selector múltiple híbrido -->
             <label for="fileInput" class="setup-btn text-white px-10 py-5 rounded-2xl font-bold text-sm shadow-2xl active:scale-95 transition-all cursor-pointer uppercase tracking-widest border border-white/20">
-                Seleccionar Archivos
+                Seleccionar Contenido
             </label>
             <input type="file" id="fileInput" accept="video/*,image/*" multiple class="hidden">
             
             <div class="mt-12 p-5 bg-white/5 rounded-2xl border border-white/10 text-left max-w-xs">
                 <p class="text-white/70 text-[11px] leading-relaxed italic">
-                    <span class="text-green-400 font-bold">PANTALLA COMPLETA:</span> Para una mejor experiencia, toca compartir y selecciona <strong class="text-white">"Agregar a inicio"</strong>.
+                    <span class="text-green-400 font-bold">IMPORTANTE:</span> Para una experiencia sin barras, usa la opción <strong class="text-white">"Agregar a inicio"</strong> en tu navegador.
                 </p>
             </div>
         </div>
 
-        <!-- Contenedor de Medios Híbrido -->
         <div class="media-container flex-1">
             <video id="mainVideo" class="media-item opacity-0 z-20" playsinline webkit-playsinline></video>
             <img id="mainBanner" src="" class="media-item opacity-0 z-10" alt="Contenido COOSAJO" />
 
             <div class="absolute top-4 left-4 z-40 bg-black/40 backdrop-blur-md rounded-lg px-3 py-1.5 flex items-center gap-2 border border-white/10">
                 <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></div>
-                <span id="mediaTypeLabel" class="text-white text-[9px] font-black uppercase tracking-widest">Señal Informativa</span>
+                <span id="mediaTypeLabel" class="text-white text-[9px] font-black uppercase tracking-widest">Contenido Activo</span>
             </div>
         </div>
 
-        <!-- REDES SOCIALES COMPACTAS -->
+        <!-- REDES SOCIALES -->
         <div class="bg-white/90 backdrop-blur-md py-2.5 px-4 flex justify-around border-t border-slate-200 shrink-0 relative z-30">
             <div class="flex items-center gap-2">
                 <img src="LOGO FACEBOOK.png" class="w-4 h-4 object-contain" />
@@ -169,14 +166,12 @@
     <script>
         lucide.createIcons();
 
-        // Reloj en tiempo real
         function updateClock() {
             const now = new Date();
             document.getElementById('clockTime').textContent = now.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', hour12: true });
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // Clima en tiempo real (Esquipulas)
         async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=14.5667&longitude=-89.35&current=temperature_2m');
@@ -192,16 +187,15 @@
         const bannerElement = document.getElementById('mainBanner');
         const typeLabel = document.getElementById('mediaTypeLabel');
 
-        let mediaPlaylist = [];
+        let playlist = [];
         let currentIndex = 0;
 
-        // Listener para carga de archivos (Imágenes y Videos)
         fileInput.addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
             if (files.length > 0) {
-                mediaPlaylist = files;
+                playlist = files;
                 
-                // Intentar Pantalla Completa
+                // Activar pantalla completa
                 try {
                     const de = document.documentElement;
                     if (de.requestFullscreen) de.requestFullscreen();
@@ -213,15 +207,13 @@
             }
         });
 
-        // Lógica de reproducción híbrida
         function playNextMedia() {
-            const file = mediaPlaylist[currentIndex];
+            const file = playlist[currentIndex];
             const isVideo = file.type.startsWith('video/');
             const url = URL.createObjectURL(file);
 
             if (isVideo) {
-                // MODO VIDEO
-                typeLabel.textContent = "Campaña Institucional";
+                typeLabel.textContent = "Video Institucional";
                 bannerElement.style.opacity = "0";
                 
                 videoElement.src = url;
@@ -235,12 +227,11 @@
 
                 videoElement.onended = () => {
                     URL.revokeObjectURL(url);
-                    currentIndex = (currentIndex + 1) % mediaPlaylist.length;
+                    currentIndex = (currentIndex + 1) % playlist.length;
                     playNextMedia();
                 };
             } else {
-                // MODO IMAGEN
-                typeLabel.textContent = "Promoción Especial";
+                typeLabel.textContent = "Banner Promocional";
                 videoElement.style.opacity = "0";
                 videoElement.pause();
                 
@@ -251,7 +242,7 @@
                 // Mostrar imagen por 10 segundos antes de pasar al siguiente
                 setTimeout(() => {
                     URL.revokeObjectURL(url);
-                    currentIndex = (currentIndex + 1) % mediaPlaylist.length;
+                    currentIndex = (currentIndex + 1) % playlist.length;
                     playNextMedia();
                 }, 10000);
             }
