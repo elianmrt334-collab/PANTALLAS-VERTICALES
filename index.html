@@ -4,24 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Configuración para App Nativa (PWA) -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="COOSAJO">
     
-    <title>COOSAJO - Tótem Móvil</title>
+    <title>COOSAJO 4K Signage</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        @keyframes scroll-left { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
-        .animate-marquee { animation: scroll-left 25s linear infinite; }
+        @keyframes scroll-left { 
+            0% { transform: translate3d(100vw, 0, 0); } 
+            100% { transform: translate3d(-100%, 0, 0); } 
+        }
+        .animate-marquee { 
+            animation: scroll-left 35s linear infinite; 
+            will-change: transform;
+        }
         
         @keyframes liquid-glow {
-            0%, 100% { box-shadow: inset 0 0 15px rgba(21, 142, 69, 0.4), 0 0 10px rgba(21, 142, 69, 0.2); border-color: rgba(21, 142, 69, 0.3); }
-            50% { box-shadow: inset 0 0 25px rgba(23, 46, 89, 0.5), 0 0 20px rgba(23, 46, 89, 0.3); border-color: rgba(23, 46, 89, 0.4); }
+            0%, 100% { box-shadow: inset 0 0 40px rgba(21, 142, 69, 0.6), 0 0 30px rgba(21, 142, 69, 0.3); border-color: rgba(21, 142, 69, 0.4); }
+            50% { box-shadow: inset 0 0 60px rgba(23, 46, 89, 0.7), 0 0 50px rgba(23, 46, 89, 0.5); border-color: rgba(23, 46, 89, 0.5); }
         }
 
         .liquid-border {
@@ -29,9 +33,10 @@
             inset: 0;
             z-index: 100;
             pointer-events: none;
-            border: 2px solid transparent;
-            animation: liquid-glow 4s ease-in-out infinite;
+            border: 6px solid transparent; /* Más grueso para 4K */
+            animation: liquid-glow 5s ease-in-out infinite;
             mix-blend-mode: screen;
+            will-change: box-shadow;
         }
 
         body { 
@@ -58,13 +63,11 @@
             width: 100%;
             height: 100%;
             transition: opacity 1s ease-in-out;
-            object-fit: contain;
         }
 
-        /* Las imágenes (banners) ocupan todo el espacio vertical */
-        .image-mode {
-            object-fit: cover !important;
-        }
+        /* Imágenes verticales ocupan todo el alto, videos mantienen su forma */
+        .image-mode { object-fit: cover !important; }
+        .video-mode { object-fit: contain !important; }
 
         .setup-btn {
             background: linear-gradient(135deg, #158e45 0%, #172e59 100%);
@@ -73,85 +76,83 @@
 </head>
 <body class="relative w-full flex flex-col">
     
-    <!-- EFECTO LIQUID GLASS -->
     <div class="liquid-border"></div>
 
-    <!-- Fondo Abstracto para espacios negativos de video -->
+    <!-- Fondo Abstracto COOSAJO -->
     <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40 pointer-events-none"
         style="background-image: url('abstract-white-background-with-elegant-curving-lin-2026-01-07-23-20-12-utc.jpg')"></div>
 
-    <!-- HEADER -->
-    <header class="relative z-30 bg-white/95 backdrop-blur-md shadow-md flex items-center justify-between px-4 py-3 border-b-4 border-[#158e45] shrink-0">
-        <img src="LOGO COOSAJO SIN ESLOGAN.png" alt="Logo" class="h-9 w-auto object-contain" />
-        <div class="flex items-center gap-2 bg-slate-100/50 px-3 py-1 rounded-xl border border-slate-200 shadow-inner">
-            <div id="weatherIconContainer"><i data-lucide="cloud-sun" class="w-4 h-4 text-[#172e59]"></i></div>
-            <span id="weatherTemp" class="font-bold text-xs text-[#172e59]">--°C</span>
-            <div class="h-4 w-px bg-slate-300"></div>
-            <span id="clockTime" class="font-bold text-sm text-[#172e59]">--:--</span>
+    <!-- HEADER: Logo, Reloj y Clima -->
+    <header class="relative z-30 bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-between px-10 py-6 border-b-8 border-[#158e45] shrink-0">
+        <img src="LOGO COOSAJO SIN ESLOGAN.png" alt="Logo" class="h-16 w-auto object-contain" />
+        <div class="flex items-center gap-6 bg-slate-100/50 px-6 py-3 rounded-2xl border border-slate-200">
+            <div id="weatherIconContainer"><i data-lucide="cloud-sun" class="w-8 h-8 text-[#172e59]"></i></div>
+            <span id="weatherTemp" class="font-black text-2xl text-[#172e59]">--°C</span>
+            <div class="h-8 w-px bg-slate-300"></div>
+            <span id="clockTime" class="font-black text-3xl text-[#172e59]">--:--</span>
         </div>
     </header>
 
     <main class="relative z-10 flex-1 w-full min-h-0 flex flex-col overflow-hidden">
         
-        <div id="setupOverlay" class="absolute inset-0 z-50 bg-[#172e59]/98 backdrop-blur-2xl flex flex-col items-center justify-center p-8 text-center">
-            <img src="LOGO COOSAJO SIN ESLOGAN.png" class="h-14 mb-8 brightness-200" />
-            <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-6 border border-white/20 animate-pulse">
-                <i data-lucide="folder-up" class="w-10 h-10 text-white"></i>
+        <div id="setupOverlay" class="absolute inset-0 z-50 bg-[#172e59]/98 backdrop-blur-2xl flex flex-col items-center justify-center p-12 text-center">
+            <img src="LOGO COOSAJO SIN ESLOGAN.png" class="h-24 mb-12 brightness-200" />
+            <div class="w-32 h-32 bg-white/10 rounded-full flex items-center justify-center mb-10 border border-white/20 animate-pulse">
+                <i data-lucide="folder-open" class="w-16 h-16 text-white"></i>
             </div>
-            <h2 class="text-white text-xl font-bold mb-2 tracking-tight uppercase">Panel de Control COOSAJO</h2>
-            <p class="text-blue-200 mb-8 text-[10px] uppercase tracking-[0.2em] font-medium">Carga de Campañas (Video e Imágenes)</p>
+            <h2 class="text-white text-4xl font-bold mb-4 tracking-tight uppercase">Panel 4K COOSAJO</h2>
+            <p class="text-blue-200 mb-12 text-sm uppercase tracking-[0.4em] font-medium">Digital Signage Vertical</p>
             
-            <!-- Selector múltiple híbrido -->
-            <label for="fileInput" class="setup-btn text-white px-10 py-5 rounded-2xl font-bold text-sm shadow-2xl active:scale-95 transition-all cursor-pointer uppercase tracking-widest border border-white/20">
-                Seleccionar Contenido
+            <label for="fileInput" class="setup-btn text-white px-16 py-8 rounded-3xl font-bold text-2xl shadow-2xl active:scale-95 transition-all cursor-pointer uppercase tracking-widest border border-white/20">
+                Cargar Contenido USB
             </label>
             <input type="file" id="fileInput" accept="video/*,image/*" multiple class="hidden">
             
-            <div class="mt-12 p-5 bg-white/5 rounded-2xl border border-white/10 text-left max-w-xs">
-                <p class="text-white/70 text-[11px] leading-relaxed italic">
-                    <span class="text-green-400 font-bold">IMPORTANTE:</span> Para una experiencia sin barras, usa la opción <strong class="text-white">"Agregar a inicio"</strong> en tu navegador.
+            <div class="mt-20 p-8 bg-white/5 rounded-3xl border border-white/10 text-left max-w-xl">
+                <p class="text-white/70 text-lg leading-relaxed italic">
+                    <span class="text-green-400 font-bold">IMPORTANTE:</span> Al seleccionar los archivos, la pantalla entrará en <strong>Fullscreen Automático</strong> y activará el audio al 100%.
                 </p>
             </div>
         </div>
 
         <div class="media-container flex-1">
-            <video id="mainVideo" class="media-item opacity-0 z-20" playsinline webkit-playsinline></video>
-            <img id="mainBanner" src="" class="media-item opacity-0 z-10" alt="Contenido COOSAJO" />
+            <video id="mainVideo" class="media-item video-mode opacity-0 z-20" playsinline webkit-playsinline></video>
+            <img id="mainBanner" src="" class="media-item image-mode opacity-0 z-10" alt="COOSAJO" />
 
-            <div class="absolute top-4 left-4 z-40 bg-black/40 backdrop-blur-md rounded-lg px-3 py-1.5 flex items-center gap-2 border border-white/10">
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]"></div>
-                <span id="mediaTypeLabel" class="text-white text-[9px] font-black uppercase tracking-widest">Contenido Activo</span>
+            <div class="absolute top-8 left-8 z-40 bg-black/40 backdrop-blur-md rounded-2xl px-6 py-3 flex items-center gap-4 border border-white/10">
+                <div class="w-4 h-4 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_#22c55e]"></div>
+                <span id="mediaTypeLabel" class="text-white text-sm font-black uppercase tracking-widest">En Pantalla</span>
             </div>
         </div>
 
-        <!-- REDES SOCIALES -->
-        <div class="bg-white/90 backdrop-blur-md py-2.5 px-4 flex justify-around border-t border-slate-200 shrink-0 relative z-30">
-            <div class="flex items-center gap-2">
-                <img src="LOGO FACEBOOK.png" class="w-4 h-4 object-contain" />
-                <span class="text-[10px] font-bold text-[#172e59]">COOSAJO</span>
+        <!-- Redes Sociales en el medio -->
+        <div class="bg-white/90 backdrop-blur-md py-4 px-10 flex justify-around border-t border-slate-200 shrink-0 relative z-30">
+            <div class="flex items-center gap-4">
+                <img src="LOGO FACEBOOK.png" class="w-8 h-8 object-contain" />
+                <span class="text-xl font-black text-[#172e59]">COOSAJO</span>
             </div>
-            <div class="flex items-center gap-2">
-                <img src="LOGO INSTA.png" class="w-4 h-4 object-contain" />
-                <span class="text-[10px] font-bold text-[#172e59]">@coosajo</span>
+            <div class="flex items-center gap-4">
+                <img src="LOGO INSTA.png" class="w-8 h-8 object-contain" />
+                <span class="text-xl font-black text-[#172e59]">@coosajo</span>
             </div>
-            <div class="flex items-center gap-2">
-                <i data-lucide="globe" class="w-3.5 h-3.5 text-[#172e59]"></i>
-                <span class="text-[10px] font-bold text-[#172e59]">coosajo.com</span>
+            <div class="flex items-center gap-4">
+                <i data-lucide="globe" class="w-7 h-7 text-[#172e59]"></i>
+                <span class="text-xl font-black text-[#172e59]">coosajo.com</span>
             </div>
         </div>
     </main>
 
-    <footer class="relative z-30 h-12 bg-[#172e59] text-white flex items-center overflow-hidden shrink-0 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]">
-        <div class="absolute left-0 top-0 bottom-0 z-40 bg-[#158e45] flex items-center px-4 shadow-xl">
-            <i data-lucide="info" class="w-4 h-4 text-white"></i>
+    <footer class="relative z-30 h-20 bg-[#172e59] text-white flex items-center overflow-hidden shrink-0 shadow-[0_-15px_30px_rgba(0,0,0,0.3)]">
+        <div class="absolute left-0 top-0 bottom-0 z-40 bg-[#158e45] flex items-center px-8 shadow-2xl">
+            <i data-lucide="info" class="w-8 h-8 text-white"></i>
         </div>
 
-        <div class="whitespace-nowrap animate-marquee flex items-center gap-12 text-[11px] font-medium ml-14">
-            <span>✨ ¡Ahorrar tiene premio! Por cada depósito de <strong class="text-yellow-400 font-black text-xs">Q50</strong> en tu Magicuenta, llevate tus estampitas.</span>
+        <div class="whitespace-nowrap animate-marquee flex items-center gap-20 text-2xl font-bold ml-24">
+            <span>✨ ¡Ahorrar tiene premio! Por cada depósito de <strong class="text-yellow-400 font-black text-4xl underline decoration-green-500">Q50</strong> en tu Magicuenta, llevate tus estampitas.</span>
             <span class="text-[#158e45] font-black">•</span>
             <span>📖 Llenar el álbum es más fácil ahorrando. ¡Ven por tus estampitas con tu Magicuenta!</span>
             <span class="text-[#158e45] font-black">•</span>
-            <span>👨‍👩‍👦 Incentiva su ahorro y completen el álbum juntos. ¡Pide tus estampitas por cada depósito de <strong class="text-yellow-400 font-black text-xs text-sm">Q50</strong>!</span>
+            <span>👨‍👩‍👦 Incentiva su ahorro y completen el álbum juntos. ¡Pide tus estampitas por cada depósito de <strong class="text-yellow-400 font-black text-4xl">Q50</strong>!</span>
             <span class="text-[#158e45] font-black">•</span>
             <span>🏠 Tu esfuerzo diario es el futuro de los que más querés.</span>
             <span class="text-[#158e45] font-black">•</span>
@@ -195,12 +196,12 @@
             if (files.length > 0) {
                 playlist = files;
                 
-                // Activar pantalla completa
+                // Forzar pantalla completa en Android 14
                 try {
                     const de = document.documentElement;
                     if (de.requestFullscreen) de.requestFullscreen();
                     else if (de.webkitRequestFullscreen) de.webkitRequestFullscreen();
-                } catch (err) {}
+                } catch (err) { console.log("Fullscreen bloqueado"); }
 
                 setupOverlay.classList.add('hidden');
                 playNextMedia();
@@ -236,15 +237,13 @@
                 videoElement.pause();
                 
                 bannerElement.src = url;
-                bannerElement.classList.add('image-mode');
                 bannerElement.style.opacity = "1";
                 
-                // Mostrar imagen por 10 segundos antes de pasar al siguiente
                 setTimeout(() => {
                     URL.revokeObjectURL(url);
                     currentIndex = (currentIndex + 1) % playlist.length;
                     playNextMedia();
-                }, 10000);
+                }, 10000); // 10 segundos para imágenes
             }
         }
     </script>
