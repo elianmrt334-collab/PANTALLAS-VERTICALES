@@ -3,28 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Pantalla Móvil COOSAJO - Audio Activo</title>
+    <title>COOSAJO - Pantalla Vertical Híbrida</title>
+    
+    <!-- -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
         @keyframes scroll-left { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .animate-marquee { animation: scroll-left 25s linear infinite; }
-        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
-        .animate-progress { animation: progress 8s linear infinite; }
-        body { overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; }
+        
+        .fade-enter { opacity: 0; transition: opacity 1s ease-in-out; }
+        .fade-enter-active { opacity: 1; }
+        .fade-exit { opacity: 1; transition: opacity 1s ease-in-out; }
+        .fade-exit-active { opacity: 0; }
+
+        body { overflow: hidden; touch-action: none; background-color: #f8fafc; }
+        
+        /* Asegurar que el contenedor mantenga la estética incluso si el video es horizontal */
+        .media-container {
+            height: calc(100vh - 220px); /* Espacio para header y footer */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            position: relative;
+        }
+
+        .media-item {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-contain: contain;
+            transition: opacity 1s ease-in-out;
+        }
     </style>
 </head>
-<body class="relative w-full h-screen bg-slate-100 overflow-hidden font-sans text-slate-800 flex flex-col m-0 p-0">
+<body class="relative w-full h-screen font-sans text-slate-800 flex flex-col m-0 p-0">
     
-    <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-60"
+    <!-- -->
+    <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40"
         style="background-image: url('abstract-white-background-with-elegant-curving-lin-2026-01-07-23-20-12-utc.jpg')"></div>
 
-    <header class="relative z-10 bg-white/95 backdrop-blur-sm shadow-md flex items-center justify-between px-4 py-3 border-b-4 border-[#158e45] shrink-0">
-        <img src="LOGO COOSAJO SIN ESLOGAN.png" alt="Logo COOSAJO" class="h-10 w-auto object-contain" />
-        <div class="flex items-center gap-3">
+    <header class="relative z-10 bg-white/95 backdrop-blur-md shadow-md flex items-center justify-between px-4 py-4 border-b-4 border-[#158e45] shrink-0">
+        <img src="LOGO COOSAJO SIN ESLOGAN.png" alt="Logo COOSAJO" class="h-12 w-auto object-contain" />
+        <div class="flex items-center gap-3 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
             <div id="weatherIconContainer"><i data-lucide="cloud-sun" class="w-5 h-5 text-[#172e59]"></i></div>
             <span id="weatherTemp" class="font-bold text-sm text-[#172e59]">--°C</span>
             <div class="h-6 w-px bg-slate-300"></div>
@@ -32,137 +55,164 @@
         </div>
     </header>
 
-    <main class="relative z-10 flex-1 flex flex-col w-full h-full min-h-0">
-        <div class="w-full bg-black relative shrink-0 shadow-xl z-20 flex items-center justify-center overflow-hidden border-b-2 border-white/20" style="aspect-ratio: 16/9;">
-            <video id="localVideoPlayer" class="absolute inset-0 w-full h-full object-contain z-10 hidden" 
-                playsinline webkit-playsinline disablePictureInPicture></video>
-
-            <div id="videoSetup" class="absolute inset-0 bg-gradient-to-br from-[#172e59] to-[#158e45] flex flex-col items-center justify-center z-20">
-                <i data-lucide="volume-2" class="w-10 h-10 text-white/80 mb-2"></i>
-                <span class="text-white font-bold text-sm mb-3 text-center px-4 uppercase tracking-tighter">Conecta USB y selecciona videos para iniciar con audio</span>
-                <label for="videoInput" class="bg-white text-[#172e59] px-6 py-3 rounded-full font-bold text-sm shadow-lg cursor-pointer active:scale-95 transition-transform">
-                    CARGAR VIDEOS
-                </label>
-                <input type="file" id="videoInput" accept="video/*" multiple class="hidden">
+    <!-- -->
+    <main class="relative z-10 flex-1 w-full min-h-0 bg-black flex flex-col overflow-hidden">
+        
+        <!-- Pantalla de inicio para cargar archivos -->
+        <div id="setupOverlay" class="absolute inset-0 z-50 bg-[#172e59] flex flex-col items-center justify-center p-8 text-center">
+            <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-6 animate-pulse">
+                <i data-lucide="folder-up" class="w-10 h-10 text-white"></i>
             </div>
+            <h2 class="text-white text-2xl font-bold mb-2">MODO VERTICAL HÍBRIDO</h2>
+            <p class="text-blue-200 mb-8 text-sm uppercase tracking-widest">Selecciona los videos de la USB para comenzar</p>
+            
+            <label for="fileInput" class="bg-[#158e45] text-white px-8 py-4 rounded-full font-black text-lg shadow-2xl active:scale-95 transition-transform cursor-pointer">
+                CARGAR CONTENIDO
+            </label>
+            <input type="file" id="fileInput" accept="video/*" multiple class="hidden">
+        </div>
 
-            <div class="absolute top-2 left-2 z-30 bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-2 pointer-events-none">
+        <!-- Contenedor de Medios -->
+        <div class="media-container w-full overflow-hidden">
+            <!-- Capa de Video -->
+            <video id="mainVideo" class="media-item opacity-0 z-10" playsinline webkit-playsinline></video>
+            
+            <!-- Capa de Banner -->
+            <img id="mainBanner" src="" class="media-item opacity-0 z-20 object-contain" alt="Banner COOSAJO" />
+
+            <!-- Etiqueta de señal -->
+            <div class="absolute top-4 left-4 z-30 bg-black/40 backdrop-blur-md rounded-lg px-3 py-1.5 flex items-center gap-2 border border-white/10">
                 <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <span class="text-white text-[10px] font-bold uppercase">Audio 100%</span>
+                <span id="mediaTypeLabel" class="text-white text-[10px] font-bold uppercase tracking-widest">Sincronizando...</span>
             </div>
         </div>
 
-        <div class="flex-1 w-full relative overflow-hidden bg-slate-800 shadow-inner">
-            <div id="bannersContainer" class="absolute inset-0 w-full h-full"></div>
-            <div id="progressContainer" class="absolute top-3 left-0 right-0 flex justify-center gap-1.5 z-20 px-6"></div>
+        <!-- Redes Sociales Pequeñas sobre el ticker -->
+        <div class="bg-white/80 backdrop-blur-sm py-2 px-4 flex justify-around border-t border-slate-200">
+            <div class="flex items-center gap-1.5">
+                <img src="LOGO FACEBOOK.png" class="w-4 h-4 object-contain" />
+                <span class="text-[10px] font-bold text-[#172e59]">COOSAJO</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <img src="LOGO INSTA.png" class="w-4 h-4 object-contain" />
+                <span class="text-[10px] font-bold text-[#172e59]">@coosajo</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <i data-lucide="globe" class="w-3.5 h-3.5 text-[#172e59]"></i>
+                <span class="text-[10px] font-bold text-[#172e59]">coosajo.com</span>
+            </div>
         </div>
     </main>
 
-    <footer class="relative z-10 h-12 bg-[#172e59] text-white flex items-center overflow-hidden shrink-0 shadow-[0_-5px_15px_rgba(0,0,0,0.4)]">
-        <div class="absolute left-0 top-0 bottom-0 z-20 bg-[#158e45] flex items-center px-3">
+    <!-- -->
+    <footer class="relative z-10 h-14 bg-[#172e59] text-white flex items-center overflow-hidden shrink-0">
+        <div class="absolute left-0 top-0 bottom-0 z-20 bg-[#158e45] flex items-center px-4 shadow-lg">
             <i data-lucide="info" class="w-5 h-5"></i>
-            <div class="absolute right-[-10px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-y-[24px] border-y-transparent border-l-[10px] border-l-[#158e45]"></div>
+            <div class="absolute right-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 border-y-[28px] border-y-transparent border-l-[10px] border-l-[#158e45]"></div>
         </div>
 
-        <div class="whitespace-nowrap animate-marquee flex items-center gap-10 text-sm font-medium ml-[60px]">
-            <!-- Magicuenta -->
-            <span>✨ ¡Ahorrar tiene premio! Por cada depósito de <strong class="text-yellow-400 font-black tracking-tighter">Q50</strong> en tu Magicuenta, llevate tus estampitas.</span>
-            <span class="text-[#158e45] text-lg">•</span>
+        <div class="whitespace-nowrap animate-marquee flex items-center gap-10 text-sm font-medium ml-16">
+            <span>✨ ¡Ahorrar tiene premio! Por cada depósito de <strong class="text-yellow-400 font-black">Q50</strong> en tu Magicuenta, llevate tus estampitas.</span>
+            <span class="text-[#158e45]">•</span>
             <span>📖 Llenar el álbum es más fácil ahorrando. ¡Ven por tus estampitas con tu Magicuenta!</span>
-            <span class="text-[#158e45] text-lg">•</span>
-            <span>👨‍👩‍👦 Incentiva su ahorro y completen el álbum juntos. ¡Pide tus estampitas por depósito de <strong class="text-yellow-400 font-black">Q50</strong>!</span>
-            <span class="text-[#158e45] text-lg">•</span>
-            <!-- Ahorro -->
+            <span class="text-[#158e45]">•</span>
+            <span>👨‍👩‍👦 Incentiva su ahorro y completen el álbum juntos. ¡Pide tus estampitas por cada depósito de <strong class="text-yellow-400 font-black">Q50</strong>!</span>
+            <span class="text-[#158e45]">•</span>
             <span>🏠 Tu esfuerzo diario es el futuro de los que más querés.</span>
-            <span class="text-[#158e45] text-lg">•</span>
+            <span class="text-[#158e45]">•</span>
             <span>🛡️ Cuidamos tu ahorro con el mismo respeto que vos le tenés.</span>
-            <span class="text-[#158e45] text-lg">•</span>
-            <!-- Créditos -->
-            <span>🚀 Impulsa tu negocio con un crédito diseñado para que sigas creciendo.</span>
-            <span class="text-[#158e45] text-lg">•</span>
-            <span>🏗️ El respaldo financiero que necesitas para construir o remodelar tu hogar.</span>
+            <span class="text-[#158e45]">•</span>
+            <span>🚀 Impulsa tu negocio con un crédito diseñado para que sigas creciendo al ritmo que quieres.</span>
+            <span class="text-[#158e45]">•</span>
+            <span>🏗️ El respaldo financiero que necesitas para construir o remodelar el hogar de tu familia.</span>
         </div>
     </footer>
 
     <script>
         lucide.createIcons();
-        function actualizarReloj() {
-            const ahora = new Date();
-            document.getElementById('clockTime').textContent = ahora.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+        // Reloj y Clima
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clockTime').textContent = now.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', hour12: true });
         }
-        setInterval(actualizarReloj, 1000); actualizarReloj();
+        setInterval(updateClock, 1000); updateClock();
 
         async function fetchWeather() {
             try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=14.5667&longitude=-89.35&current=temperature_2m,weather_code');
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=14.5667&longitude=-89.35&current=temperature_2m');
                 const data = await res.json();
                 document.getElementById('weatherTemp').textContent = `${Math.round(data.current.temperature_2m)}°C`;
             } catch (e) { console.error("Error clima"); }
         }
         fetchWeather(); setInterval(fetchWeather, 900000);
 
-        // --- LÓGICA DE VIDEO CON AUDIO ---
-        const videoInput = document.getElementById('videoInput');
-        const reproductor = document.getElementById('localVideoPlayer');
-        const videoSetup = document.getElementById('videoSetup');
-        let listaVideos = [];
-        let videoActual = 0;
+        // --- LÓGICA DE PLAYLIST HÍBRIDA ---
+        const fileInput = document.getElementById('fileInput');
+        const setupOverlay = document.getElementById('setupOverlay');
+        const videoElement = document.getElementById('mainVideo');
+        const bannerElement = document.getElementById('mainBanner');
+        const typeLabel = document.getElementById('mediaTypeLabel');
 
-        videoInput.addEventListener('change', function(event) {
-            const files = event.target.files;
+        let videoPlaylist = [];
+        let currentVideoIndex = 0;
+        let currentLateralIndex = 1; // Lateral 1.png a Lateral 8.png
+        let isShowingVideo = true;
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
             if (files.length > 0) {
-                listaVideos = Array.from(files);
-                videoActual = 0;
-                videoSetup.classList.add('hidden');
-                reproductor.classList.remove('hidden');
-                reproducirVideoActual();
+                videoPlaylist = files;
+                setupOverlay.classList.add('hidden');
+                startHybridCycle();
             }
         });
 
-        function reproducirVideoActual() {
-            if (listaVideos.length > 0) {
-                if (reproductor.src) URL.revokeObjectURL(reproductor.src);
-                reproductor.src = URL.createObjectURL(listaVideos[videoActual]);
-                reproductor.muted = false; // ASEGURAR SONIDO
-                reproductor.volume = 1.0;  // VOLUMEN AL MÁXIMO
-                reproductor.play().catch(e => {
-                    console.log("Audio bloqueado, intentando sin sonido...", e);
-                    reproductor.muted = true;
-                    reproductor.play();
-                });
-            }
+        function startHybridCycle() {
+            playNextMedia();
         }
 
-        reproductor.addEventListener('ended', () => {
-            videoActual = (videoActual + 1) % listaVideos.length;
-            reproducirVideoActual();
-        });
+        function playNextMedia() {
+            if (isShowingVideo) {
+                // MOSTRAR VIDEO
+                typeLabel.textContent = "Video Institucional";
+                bannerElement.style.opacity = "0";
+                
+                const file = videoPlaylist[currentVideoIndex];
+                const url = URL.createObjectURL(file);
+                
+                videoElement.src = url;
+                videoElement.style.opacity = "1";
+                videoElement.muted = false; // Asegurar audio
+                videoElement.volume = 1.0;
+                
+                videoElement.play().catch(() => {
+                    videoElement.muted = true;
+                    videoElement.play();
+                });
 
-        // --- BANNERS ---
-        const banners = [
-            { img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=431&h=767&q=80" },
-            { img: "https://images.unsplash.com/photo-1556761175-5973dc0f32d7?auto=format&fit=crop&w=431&h=767&q=80" },
-            { img: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=431&h=767&q=80" }
-        ];
-        let currentBanner = 0;
-        banners.forEach((banner, index) => {
-            const imgDiv = document.createElement('div');
-            imgDiv.id = `banner-${index}`;
-            imgDiv.className = `absolute inset-0 transition-opacity duration-1000 ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
-            imgDiv.innerHTML = `<img src="${banner.img}" class="w-full h-full object-cover" />`;
-            document.getElementById('bannersContainer').appendChild(imgDiv);
-            const dot = document.createElement('div');
-            dot.className = "h-1 flex-1 bg-white/40 rounded-full overflow-hidden";
-            dot.innerHTML = `<div id="progreso-${index}" class="h-full bg-[#158e45] w-full ${index === 0 ? 'animate-progress' : 'opacity-0'} rounded-full"></div>`;
-            document.getElementById('progressContainer').appendChild(dot);
-        });
-        setInterval(() => {
-            currentBanner = (currentBanner + 1) % banners.length;
-            banners.forEach((_, i) => {
-                document.getElementById(`banner-${i}`).className = `absolute inset-0 transition-opacity duration-1000 ${i === currentBanner ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
-                document.getElementById(`progreso-${i}`).className = `h-full bg-[#158e45] w-full rounded-full ${i === currentBanner ? 'animate-progress' : (i < currentBanner ? 'opacity-100' : 'opacity-0')}`;
-            });
-        }, 8000);
+                videoElement.onended = () => {
+                    URL.revokeObjectURL(url);
+                    currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
+                    isShowingVideo = false; // Turno del banner
+                    playNextMedia();
+                };
+            } else {
+                // MOSTRAR BANNER (Lateral)
+                typeLabel.textContent = "Información COOSAJO";
+                videoElement.style.opacity = "0";
+                
+                bannerElement.src = `Lateral ${currentLateralIndex}.png`;
+                bannerElement.style.opacity = "1";
+                
+                // Esperar 8 segundos antes de volver a video
+                setTimeout(() => {
+                    currentLateralIndex = (currentLateralIndex % 8) + 1;
+                    isShowingVideo = true; // Turno del video
+                    playNextMedia();
+                }, 8000);
+            }
+        }
     </script>
 </body>
 </html>
