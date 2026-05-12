@@ -78,25 +78,26 @@
         <div class="w-full aspect-video bg-black relative shrink-0 shadow-xl z-20 flex items-center justify-center overflow-hidden border-b-2 border-white/20">
             
             <!-- REPRODUCTOR DE VIDEO LOCAL -->
-            <!-- playsinline es OBLIGATORIO en celulares para que no se abra a pantalla completa nativa -->
             <video 
                 id="localVideoPlayer"
-                class="absolute inset-0 w-full h-full object-contain z-10" 
+                class="absolute inset-0 w-full h-full object-contain z-10 hidden" 
                 autoplay 
                 muted 
                 playsinline
-            >
-                <source src="video1.mp4" type="video/mp4">
-            </video>
+            ></video>
 
-            <!-- Placeholder visual en caso de que no haya video en la USB -->
-            <div id="videoFallback" class="absolute inset-0 bg-gradient-to-br from-[#172e59] to-[#158e45] flex flex-col items-center justify-center z-0">
-                <i data-lucide="monitor-play" class="w-12 h-12 text-white/50 mb-2"></i>
-                <span class="text-white/80 font-bold text-sm">Cargando video local...</span>
+            <!-- Interfaz para cargar videos desde la USB (GitHub Compatible) -->
+            <div id="videoSetup" class="absolute inset-0 bg-gradient-to-br from-[#172e59] to-[#158e45] flex flex-col items-center justify-center z-20">
+                <i data-lucide="usb" class="w-10 h-10 text-white/80 mb-2"></i>
+                <span class="text-white font-bold text-sm mb-3 text-center px-4">Conecta la USB y selecciona los videos</span>
+                <label for="videoInput" class="bg-white text-[#172e59] px-4 py-2 rounded-full font-bold text-sm shadow-lg cursor-pointer active:scale-95 transition-transform">
+                    Cargar Videos
+                </label>
+                <input type="file" id="videoInput" accept="video/*" multiple class="hidden">
             </div>
 
             <!-- Etiqueta Flotante Pequeña -->
-            <div class="absolute top-2 left-2 z-20 bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-2">
+            <div class="absolute top-2 left-2 z-30 bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1 flex items-center gap-2 pointer-events-none">
                 <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                 <span class="text-white text-xs font-semibold">Educación 2026</span>
             </div>
@@ -172,23 +173,50 @@
         fetchWeather();
         setInterval(fetchWeather, 900000);
 
-        // --- LISTA DE REPRODUCCIÓN DE VIDEOS LOCALES ---
-        // Aquí puedes agregar los nombres de los videos que metas en la USB
-        const listaVideos = [
-            "video1.mp4",
-            "video2.mp4", 
-            "video3.mp4",
-            "video4.mp4",
-            "video5.mp4", // Agrega más si necesitas
-        ];
-        let videoActual = 0;
+        // --- SISTEMA DE REPRODUCCIÓN DE VIDEOS DESDE USB (COMPATIBLE CON GITHUB) ---
+        const videoInput = document.getElementById('videoInput');
         const reproductor = document.getElementById('localVideoPlayer');
+        const videoSetup = document.getElementById('videoSetup');
+        
+        let listaVideos = [];
+        let videoActual = 0;
 
-        // Cuando termina un video, pasa al siguiente de la lista en la USB
+        // Cuando el usuario toca "Cargar Videos" y selecciona los archivos
+        videoInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+            if (files.length > 0) {
+                // Guardar los archivos seleccionados en memoria
+                listaVideos = Array.from(files);
+                videoActual = 0;
+                
+                // Ocultar la pantalla de configuración y mostrar el reproductor
+                videoSetup.classList.add('hidden');
+                reproductor.classList.remove('hidden');
+                
+                // Iniciar el primer video
+                reproducirVideoActual();
+            }
+        });
+
+        function reproducirVideoActual() {
+            if (listaVideos.length > 0) {
+                // Liberar la memoria del video anterior para que el celular no se trabe
+                if (reproductor.src) URL.revokeObjectURL(reproductor.src);
+                
+                // Crear un enlace temporal que el navegador puede leer desde la USB
+                const fileURL = URL.createObjectURL(listaVideos[videoActual]);
+                reproductor.src = fileURL;
+                
+                reproductor.play().catch(e => console.log("Auto-play prevenido:", e));
+            }
+        }
+
+        // Cuando termina un video, pasa al siguiente de la lista en bucle
         reproductor.addEventListener('ended', () => {
-            videoActual = (videoActual + 1) % listaVideos.length;
-            reproductor.src = listaVideos[videoActual];
-            reproductor.play().catch(e => console.log("Auto-play prevenido por el navegador."));
+            if (listaVideos.length > 0) {
+                videoActual = (videoActual + 1) % listaVideos.length;
+                reproducirVideoActual();
+            }
         });
 
         // --- SISTEMA DE BANNERS ---
